@@ -1,0 +1,40 @@
+title: Vasco Engineering
+tagline: Notes from the team building the revenue context layer.
+description: >-
+  Technical writing on the systems, tradeoffs, and hard-won lessons behind
+  Vasco — the structured data layer that keeps AI revenue agents honest.
+url: "https://engineering.vasco.app"
+baseurl: ""
+
+# Clean per-post URLs, e.g. /four-agent-frameworks/
+permalink: /:title/
+
+# Default author byline. Any post can override these in its front matter.
+author:
+  name: Sebastien Castiel
+  role: Vasco Engineering
+  initials: SC
+
+markdown: kramdown
+kramdown:
+  input: GFM
+
+# Site defaults: every file in _posts/ gets the post layout + author byline.
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+      author: Sebastien Castiel
+      author_role: Vasco Engineering
+      author_initials: SC
+
+# Not part of the built site.
+exclude:
+  - _handoff
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - vendor
+  - scratchpad

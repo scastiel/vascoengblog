@@ -1,0 +1,23 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% if page.title and page.url != "/" %}{{ page.title }} · {{ site.title }}{% else %}{{ site.title }}{% endif %}</title>
+{% if page.dek or page.summary or site.description %}
+<meta name="description" content="{{ page.dek | default: page.summary | default: site.description | strip_html | strip_newlines | escape }}">
+{% endif %}
+
+<!-- No-flash theme init: set data-theme before first paint. -->
+<script>(function(){try{var t=localStorage.getItem('vx-theme');if(t!=='light'&&t!=='dark')t='dark';document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();</script>
+
+<!-- Design tokens live inline so the theme is present before the stylesheet loads. -->
+<style id="vx-theme-vars">
+:root{--bg:#0c0d0f;--panel:#111216;--surface:#16181c;--surface-border:#2f333a;--text:#e6e7ea;--text-soft:#c7cad0;--lead:#a9acb3;--muted:#8a8d94;--muted2:#71747b;--faint:#3a3d44;--border:#26282d;--hair:#1c1e22;--accent:#4ea1ff;--accent-2:#7fbcff;--accent-border:#2c5c8f;--cta-bg:#0f1013;--add:#7fd8a4;--del:#d99a9a;--del-line:rgba(217,154,154,0.5);--header-bg:rgba(12,13,15,0.82);color-scheme:dark;}
+[data-theme="light"]{--bg:#fbfbf9;--panel:#f1f2ee;--surface:#eceee7;--surface-border:#d9dbd3;--text:#181d24;--text-soft:#333941;--lead:#565c64;--muted:#5b626a;--muted2:#787e86;--faint:#c2c6c0;--border:#e2e4dd;--hair:#eaece5;--accent:#2f6fd6;--accent-2:#1f57b8;--accent-border:#a9c4ec;--cta-bg:#f1f2ee;--add:#1f7a4d;--del:#b33a3a;--del-line:rgba(179,58,58,0.45);--header-bg:rgba(251,251,249,0.82);color-scheme:light;}
+html,body{background:var(--bg);}
+body{transition:background-color .25s ease,color .2s ease;}
+</style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">

@@ -1,0 +1,10 @@
+{% comment %} `home_link` param toggles the first link between Home and Articles. {% endcomment %}
+<footer class="vx-footer">
+  <div class="inner">
+    <span>&#169; {{ 'now' | date: "%Y" }} Vasco</span>
+    <span class="links">
+      {% if include.home_link %}<a href="{{ '/' | relative_url }}">Home</a>{% else %}<a href="{{ '/articles/' | relative_url }}">Articles</a>{% endif %}
+      <a href="https://jobs.ashbyhq.com/vasco">Careers</a>
+    </span>
+  </div>
+</footer>

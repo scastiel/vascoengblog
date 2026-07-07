@@ -1,0 +1,33 @@
+---
+layout: default
+nav: home
+footer_home: false
+permalink: /
+---
+<div class="vx-main--padded">
+
+  <section class="vx-hero-section">
+    <span class="vx-eyebrow-accent">Engineering&#160;&#8212;&#160;Vasco</span>
+    <h1 class="vx-hero">{{ site.tagline }}</h1>
+    <p class="vx-lead">{{ site.description }}</p>
+  </section>
+
+  <section class="vx-recent">
+    <div class="vx-recent-head">
+      <h2 class="vx-mono-label">Recent</h2>
+      <a class="vx-all-link" href="{{ '/articles/' | relative_url }}">All articles&#160;&#8594;</a>
+    </div>
+    {% for post in site.posts limit: 5 %}
+      {% include post-row.html post=post date_format="%b %Y" %}
+    {% endfor %}
+  </section>
+
+  <section class="vx-about">
+    <h2 class="vx-mono-label">About</h2>
+    <div class="body">
+      <p class="soft">We're the engineering team behind <a href="https://vasco.app">Vasco</a>. We build the context graph that unifies CRM, calls, billing, and product data into one source of truth &#8212; so revenue agents run in production on numbers that hold up, not made up.</p>
+      <p class="muted">These posts are how we think out loud. We also hire, occasionally &#8212; <a href="https://jobs.ashbyhq.com/vasco">open roles</a>.</p>
+    </div>
+  </section>
+
+</div>

@@ -1,0 +1,126 @@
+---
+title: "Building a Modular AI Copilot: From Monolithic to Dynamic Context"
+date: 2025-10-30
+category_label: Architecture
+summary: How we built Vasco's Copilot — from a LangChain-and-Gemini prototype to a modular architecture where each page declares its own context and tools.
+---
+<p>Revenue operations teams face a constant challenge: complex workflows that require deep domain knowledge, even for seemingly simple tasks. At Vasco, users struggle with forms that ask for <strong>CRM field mappings</strong>, <strong>date categorizations</strong>, and <strong>pipeline classifications</strong> — tasks that feel straightforward but actually require significant <strong>RevOps</strong> expertise. Our platform brings <strong>clarity</strong>, <strong>control</strong>, and <strong>automation</strong> to these inherently complex revenue workflows, but even with the best user experience, <strong>RevOps</strong> tasks can feel overwhelming.</p>
+<p>To help users find their way through this complexity, we built a <strong>Copilot</strong> — a contextual assistant that provides real-time guidance and suggestions within the app.</p>
+<p>For example, when a user is filling out a form to categorize sales events, the Copilot might suggest “Q4 2024” for a date field based on the context, or recommend relevant CRM fields to group similar events together. It can also auto-fill fields when confident about the user’s intent, saving users from having to remember and type the same information repeatedly.</p>
+<p>In this post, we’ll walk through:</p>
+<ul>
+<li>how we built the Copilot,</li>
+<li>the design iterations we made along the way, and</li>
+<li>how this foundation will support more interactive AI features throughout the Vasco platform.</li>
+</ul>
+<h2 id="why" data-toc-title="Why we built it">1. Why We Built the Copilot</h2>
+<p>This isn’t our first time using AI at Vasco. For over a year, we’ve relied on both <strong>generative and non-generative models</strong> to power features like CRM enrichment, pipeline analysis, and workflow automation. But until now, those capabilities mostly ran in the background. The Copilot marks a shift: AI stepping out of the <strong>backend</strong> to assist users <strong>directly</strong> within the product experience.</p>
+<p>We typically favor a <strong>buy-vs-build</strong> approach, especially as a startup. When exploring ways to deliver this kind of experience, we looked for existing solutions. The closest we found was <a href="https://www.copilotkit.ai/">CopilotKit</a>, which inspired a few ideas but didn’t align with our architectural needs or product direction.</p>
+<p>So we built our own. We started small with a <strong>domain-specific form</strong> that was just the right mix of compact and complex. This form — used to group events into buckets by leveraging CRM fields — doesn’t have many inputs, but each one requires domain knowledge. That made it an ideal first test case for the Copilot’s assistant capabilities.</p>
+<h2 id="how" data-toc-title="How we got it working">2. How We Got It Working</h2>
+<p>Our initial implementation of the Copilot was built using <strong>LangChain</strong> and <strong>Gemini</strong>. Our intuition was to treat frontend interactions as if they were tools in a typical agent setup — allowing the LLM to reason about which action to perform, like <code>updateForm()</code>, based on the current context.</p>
+<p>However, the LLM workflow lives on the backend, and doesn’t have direct access to the frontend. We needed a way for the model to request UI actions and receive feedback. To solve this, we introduced a <strong>lightweight communication protocol</strong> between the backend and the frontend.</p>
+<p>The LLM would emit structured messages like:</p>
+<pre><code>callTool: updateFormField({
+  fieldId: &quot;eventDate&quot;,
+  value: &quot;2024-12-15&quot;,
+  confidence: 0.95,
+  reasoning: &quot;Based on the user&#x27;s mention of &#x27;end of year&#x27; and current context, suggesting Q4 2024 date&quot;
+})</code></pre>
+<p>The frontend, observing these messages, would parse them, run the corresponding UI action (e.g., updating the form field), and return a response back to the backend:</p>
+<pre><code>toolCallResponse: {
+  success: true,
+  fieldUpdated: &quot;eventDate&quot;,
+  newValue: &quot;2024-12-15&quot;,
+  uiState: &quot;field_highlighted&quot;
+}</code></pre>
+<p>This protocol enabled a basic but functional loop: the LLM could plan what to do next based on the tool responses it received. The backend essentially orchestrated the sequence of tool calls, while the frontend served as an executor.</p>
+<p>We used LangChain to:</p>
+<ul>
+<li>model the agent’s reasoning steps,</li>
+<li>manage the state of the interaction, and</li>
+<li>generate the next action based on context and history.
+Gemini served as the underlying LLM, interpreting the prompts and producing the next <code>callTool</code> or final response.</li>
+</ul>
+<p>Overall, this setup let us prototype a <strong>multi-turn, interactive experience</strong> with minimal coupling between the frontend and the model logic. It gave us early validation that the Copilot could interact intelligently with the interface.</p>
+<p>While this first version worked well in isolation, it exposed some cracks as we started thinking about scaling. Every new use case required custom logic and tool wiring in both the prompt and frontend. That wasn’t sustainable.</p>
+<p>It made it obvious we needed a more modular approach — one where each page could declare its own context and tools in a structured, dynamic way.</p>
+<h2 id="modular" data-toc-title="Making it modular">3. Making It Modular</h2>
+<p>To address the scalability and modularity challenges, we rethought the architecture so that each page could define its own context and capabilities dynamically. Rather than maintaining a central list of tools or hardcoding logic into prompts, the <strong>frontend became responsible for sending a session-specific configuration</strong> to the backend.</p>
+<p>At the beginning of each session, the frontend now provides:</p>
+<ul>
+<li><strong>A dynamic description of the page</strong> — what the user is doing and how the Copilot can help.</li>
+<li><strong>Static context</strong> — like current user info or available icons.</li>
+<li><strong>Available tools</strong> — each with a serialized parameter schema and return type.
+This makes the system much more <strong>modular</strong>. Every page or view can expose its own assistant behavior, with clear boundaries between context, capabilities, and logic. The backend simply registers runtime tools from the configuration and drives the interaction accordingly.</li>
+</ul>
+<p>The backend uses this to register <strong>runtime LangChain tools</strong> that conform to the page’s contract. Each view is responsible for implementing and handling the tools it exposes.</p>
+<p>Additionally, with each message (the first one and all subsequent ones), we also send the current page’s state. This way, the agent knows if the user updated a field without using the chat.</p>
+<p>Here’s what the system prompt looks like (we’ve simplified these examples for clarity — the actual prompts and messages contain much more detailed context and structured data):</p>
+<pre><code>You are a helpful Copilot helping the user on a form.
+You’ll receive a description of the page and instructions about how you can help the user on it. Follow these instructions by the letter.</code></pre>
+<p>When a user starts a conversation, we send an initialization message that sets up the context for the entire session:</p>
+<pre><code>Initialization message:
+Here is the description of the page the user is on:
+PAGE DESCRIPTION
+Here is some additional context on the page:
+CONTEXT
+Here is the page’s current state:
+CURRENT STATE</code></pre>
+<p><strong>Note:</strong> LangChain’s tool system handles the available tools, so we don’t need to include them in our prompt — they’re automatically available to the LLM when needed.</p>
+<p>Then, with every user message, we include the current state so the Copilot always knows what’s changed:</p>
+<pre><code>User message:
+USER MESSAGE
+Here is the page’s current state:
+CURRENT STATE</code></pre>
+<p>This gives every page autonomy over its Copilot experience — giving the system:</p>
+<ul>
+<li><strong>Modularity</strong>: Each page defines its own tools and capabilities without affecting other parts of the app.</li>
+<li><strong>Predictability</strong>: Clear contracts between frontend and backend eliminate guesswork about available functionality.</li>
+<li><strong>Extensibility</strong>: Adding Copilot support to new pages requires no changes to core backend logic.</li>
+<li><strong>Contextual Intelligence</strong>: The Copilot adapts its behavior based on the specific page context.</li>
+</ul>
+<h2 id="ahead" data-toc-title="What’s ahead">4. What’s Ahead and Wrapping Up</h2>
+<p>Currently, the Copilot is only available in one form. But with the modular architecture now in place, we’ve started rolling it out to more parts of the app — with <strong>user onboarding flows</strong> being a key next target.</p>
+<p>Thanks to this setup, the Copilot can now operate across multiple UI zones at once. Imagine a page that includes both:</p>
+<ul>
+<li>a <strong>form</strong> the user is editing, and</li>
+<li>a <strong>sidebar</strong> with navigation actions or analytics.
+The Copilot can help with both. If the user navigates away from the form, the frontend tells the agent the form tools and context are no longer available — but keeps the sidebar tools active.</li>
+</ul>
+<p>This makes the assistant <strong>persistent and adaptive</strong>, able to evolve with the UI as users move through the app.</p>
+<h4>Key Lessons Learned</h4>
+<p>Building the Copilot taught us several important lessons about AI-powered UX:</p>
+<ol>
+<li><strong>Start small, think modular</strong> — Beginning with a focused use case helped us validate the concept before scaling</li>
+<li><strong>Context is everything</strong> — The Copilot’s value comes from understanding not just what the user is doing, but why</li>
+<li><strong>Developer experience matters</strong> — The modular architecture makes it easy for our team to add Copilot support to new features</li>
+<li><strong>Real-time interaction is powerful</strong> — Moving from passive insights to active assistance fundamentally changes the user experience
+Building the Copilot has been a big step toward making Vasco more interactive, approachable, and AI-native. We’ve moved from passive insights to real-time, contextual assistance — and the foundation we’ve laid opens up exciting possibilities across the product.</li>
+</ol>
+<p>The journey isn’t over. As we continue to expand the Copilot to new workflows, we’re staying focused on keeping things intuitive for users, modular for developers, and grounded in real utility.</p>
+<h2 id="tech" data-toc-title="Implementation details">5. Technical Implementation Details</h2>
+<p>While the modular architecture solved our core scalability challenges, we also implemented several technical features that make the Copilot robust and developer-friendly.</p>
+<p>These implementation details might seem like nice-to-haves, but they’re crucial for creating a production-ready AI assistant that developers can trust and users can rely on.</p>
+<h4>Tool Integration Architecture</h4>
+<p>To strengthen the communication between frontend and backend, we wrapped each client-side tool with a corresponding <strong>LangChain tool</strong> on the backend. These tools define a clear input schema, validate inputs before execution, and dispatch a well-formed message to the frontend. Once the frontend executes the action and returns a structured result, LangChain picks up the thread and continues reasoning — creating a clean loop with minimal glue code.</p>
+<p>We leveraged LangChain’s <a href="https://blog.langchain.com/making-it-easier-to-build-human-in-the-loop-agents-with-interrupt/">interrupt feature</a>, normally used for “Human in the loop” workflows, to create what we call “Frontend in the loop” — allowing the LLM to pause execution while waiting for frontend actions to complete, then resume with the results.</p>
+<h4>Type-Safe Communication</h4>
+<p>Our architecture enabled us to build a <strong>type-safe communication library using LangChain with TypeScript</strong> between the frontend and backend. This ensures that:</p>
+<ul>
+<li>Message parsing and tool execution happen in a robust, predictable way</li>
+<li>TypeScript catches potential errors at compile time rather than runtime</li>
+<li>The system integrates seamlessly with <strong>streaming responses</strong> for real-time interactions</li>
+</ul>
+<h4>Rich UI Components</h4>
+<p>Beyond simple tool calls, the frontend can register <strong>custom components</strong> that the Copilot can use in its responses. This enables us to render <strong>rich and even interactive content</strong> directly inside the chat interface — from styled messages to embedded action buttons that users can click without leaving the conversation.</p>
+<h4>Debugging and Observability</h4>
+<p>The modular approach also made it easier to implement comprehensive logging throughout the system. We added proper logging in the frontend that allows developers to see all messages — including internal tool calls and system messages that aren’t displayed to users — directly from the browser’s DevTools console. This visibility is crucial for debugging complex AI interactions and understanding how the Copilot reasons about user requests.</p>
+<hr/>
+<h2 id="glossary" data-toc-title="Glossary">Glossary</h2>
+<p><strong>LLM (Large Language Model)</strong>: AI models trained on vast amounts of text data that can understand and generate human-like language. Examples include GPT, Claude, and Gemini.</p>
+<p><strong>LangChain</strong>: A framework for building applications with LLMs that provides tools for managing conversations, integrating external data, and orchestrating complex AI workflows.</p>
+<p><strong>Gemini</strong>: Google’s large language model that powers our Copilot’s reasoning and response generation.</p>
+<p><strong>RevOps (Revenue Operations)</strong>: A business function that aligns sales, marketing, and customer success operations to drive growth through process optimization and data analysis.</p>
+<p><strong>Agent</strong>: An AI system that can take actions and make decisions based on its environment and goals, often using tools or APIs to accomplish tasks.</p>
+<p><strong>Tool</strong>: A function or capability that an AI agent can use to perform specific actions, such as updating form fields or retrieving data.</p>

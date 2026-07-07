@@ -1,0 +1,13 @@
+{% comment %}
+  A single post row for the Home + Articles lists.
+  Params: post (required), date_format (strftime, defaults to "%b %d").
+{% endcomment %}
+{% assign df = include.date_format | default: "%b %d" %}
+<a class="vx-row" href="{{ include.post.url | relative_url }}">
+  <span class="vx-rowdate">{{ include.post.date | date: df }}</span>
+  <span>
+    <span class="vx-row-title">{{ include.post.title }}</span>
+    {% if include.post.summary %}<span class="vx-row-summary">{{ include.post.summary }}</span>{% endif %}
+  </span>
+  <span class="vx-row-arrow">&#8594;</span>
+</a>

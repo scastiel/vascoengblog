@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% include head.html %}
+</head>
+<body>
+  <div class="vx-page">
+    {% include header.html active=page.nav sticky=page.sticky_header %}
+    <main class="vx-main">
+      {{ content }}
+    </main>
+    {% include footer.html home_link=page.footer_home %}
+  </div>
+  <script src="{{ '/assets/js/blog.js' | relative_url }}" defer></script>
+</body>
+</html>

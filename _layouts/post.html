@@ -1,0 +1,64 @@
+---
+layout: default
+nav: articles
+sticky_header: true
+footer_home: true
+---
+<div class="vx-post-head">
+  <a class="vx-backlink" href="{{ '/articles/' | relative_url }}">&#8592;&#160;All articles</a>
+  {% if page.category_label %}<span class="vx-cat">{{ page.category_label }}</span>{% endif %}
+  <h1 class="vx-h1">{{ page.title }}</h1>
+  {% if page.dek %}<p class="vx-dek">{{ page.dek }}</p>{% endif %}
+
+  <div class="vx-byline">
+    <span class="vx-avatar">{{ page.author_initials }}</span>
+    <span class="vx-author">
+      <span class="vx-author-name">{{ page.author }}</span>
+      <span class="vx-author-role">{{ page.author_role }}</span>
+    </span>
+    <span class="vx-divider"></span>
+    <span class="vx-date">{{ page.date | date: "%B %Y" }}</span>
+  </div>
+</div>
+
+<div class="vx-grid">
+  <aside class="vx-toc">
+    <div class="vx-toc-label">On this page</div>
+    <nav class="vx-toc-nav" data-toc-nav></nav>
+  </aside>
+
+  <article class="vx-prose">
+    {{ content }}
+  </article>
+</div>
+
+<div class="vx-main--padded">
+  <div class="vx-pn">
+    {% comment %} Newer = the chronologically next post; Older = the previous one. {% endcomment %}
+    {% if page.next %}
+      <a class="vx-pn-cell newer" href="{{ page.next.url | relative_url }}">
+        <span class="kicker">&#8592;&#160;Newer</span>
+        <span class="title">{{ page.next.title }}</span>
+      </a>
+    {% else %}
+      <span class="vx-pn-cell newer empty">
+        <span class="kicker">&#8592;&#160;Newer</span>
+        <span class="title">Nothing here yet</span>
+      </span>
+    {% endif %}
+
+    {% if page.previous %}
+      <a class="vx-pn-cell older" href="{{ page.previous.url | relative_url }}">
+        <span class="kicker">Older&#160;&#8594;</span>
+        <span class="title">{{ page.previous.title }}</span>
+      </a>
+    {% else %}
+      <span class="vx-pn-cell older empty">
+        <span class="kicker">Older&#160;&#8594;</span>
+        <span class="title">Nothing here yet</span>
+      </span>
+    {% endif %}
+  </div>
+</div>
+
+<div class="vx-spacer-88"></div>

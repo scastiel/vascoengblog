@@ -1,0 +1,22 @@
+---
+layout: default
+nav: articles
+footer_home: true
+permalink: /articles/
+title: Articles
+---
+<div class="vx-main--padded">
+  <section class="vx-title-section">
+    <span class="vx-eyebrow-accent">All articles</span>
+    <h1 class="vx-title">Articles</h1>
+    <p class="vx-sub">{{ site.posts | size }} posts on the systems behind Vasco.</p>
+  </section>
+
+  <section class="vx-year-group">
+    {% for post in site.posts %}
+      {% include post-row.html post=post date_format="%b %Y" %}
+    {% endfor %}
+  </section>
+
+  <div class="vx-spacer-80"></div>
+</div>

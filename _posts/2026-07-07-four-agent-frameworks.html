@@ -1,0 +1,90 @@
+---
+title: Four agent frameworks in sixteen months
+date: 2026-07-07
+category_label: Agents · Retrospective
+summary: How Gama went from LangChain to LangGraph to Google ADK to Mastra to the Claude Agent SDK — and what we'd tell our December 2024 selves.
+dek: How Gama went from LangChain to LangGraph to Google ADK to Mastra to the Claude Agent SDK — and what we'd tell our December&#160;2024 selves.
+---
+<div class="vx-diff" role="img" aria-label="Timeline of agent frameworks, styled as a git diff: LangChain, LangGraph, Google ADK, and Mastra removed; Claude Agent SDK added in April 2026">
+  <span class="file">$ git log --oneline gama/runtime</span>
+  <span class="row del"><span>- <span class="name">LangChain (TypeScript)</span></span><span class="when">Dec 2024</span></span>
+  <span class="row del"><span>- <span class="name">LangGraph (Python)</span></span><span class="when">mid 2025</span></span>
+  <span class="row del"><span>- <span class="name">Google ADK + Agent Engine (Python)</span></span><span class="when">Oct 2025</span></span>
+  <span class="row del"><span>- <span class="name">Mastra (TypeScript)</span></span><span class="when">Mar 2026</span></span>
+  <span class="row add"><span>+ Claude Agent SDK (TypeScript)</span><span class="when">Apr 2026</span></span>
+</div>
+
+<p>Gama is <a href="https://www.vasco.app">Vasco</a>'s AI agent. It answers questions about your revenue data, investigates why a metric moved, writes business reviews, and runs the custom agents our customers build. Under the hood, it has been rebuilt on a different agent framework four times in sixteen months.</p>
+<p>That sounds like a failure. We want to argue it isn't &#8212; and that the real mistake in 2026 is the opposite one: staying loyal to a framework out of sunk cost. But to make that argument honestly, we have to walk through each migration, including the parts that don't flatter us.</p>
+
+<div class="vx-numbers">
+  <h3>By the numbers</h3>
+  <div class="vx-ngrid">
+    <div class="vx-stat"><span class="big">4<span class="unit">frameworks</span></span><span class="label">in 16 months</span></div>
+    <div class="vx-stat"><span class="big">1.5<span class="unit">weeks</span></span><span class="label">ADK &#8594; Mastra, 2 devs, ~50 PRs</span></div>
+    <div class="vx-stat"><span class="big">37k<span class="unit">lines</span></span><span class="label">of old stack deleted (395 files)</span></div>
+    <div class="vx-stat"><span class="big">&lt;24<span class="unit">hours</span></span><span class="label">prototype to green light on the Agent SDK</span></div>
+    <div class="vx-stat hero"><span class="big">few&#160;$<span class="unit">/report</span></span><span class="label">for a deep business review, better than before</span></div>
+    <div class="vx-stat"><span class="big">0<span class="unit">disruption</span></span><span class="label">agents kept running behind a feature flag</span></div>
+  </div>
+</div>
+
+<p class="vx-eyebrow">December 2024</p>
+<h2 id="babysitting">Babysitting the LLM</h2>
+<p>Gama started as a feature called Stage Diagnostics: a text explanation of the numbers on a page, to make the analysis easier to read. Simple enough. We had two problems.</p>
+<p>The first was that hallucinations were everywhere, and no amount of prompt engineering gave us a guarantee. Worse &#8212; and this is the part people forget about 2024 &#8212; the outputs that <em>were</em> accurate were mostly useless. They stated the obvious. "Your conversion rate went down because fewer accounts converted." Thanks.</p>
+<p>The second was structured output. LLMs at the time were bad at returning data in the exact shape you asked for, and we needed specific values formatted a specific way inside the text. Our fix, and we're not proud of this, was to write code that parsed the generated text, detected the numbers in it, and reformatted them ourselves. Our first solution to unreliable AI output was to write more code around it.</p>
+<blockquote>If we're honest about the effort split, about 70% of the work on that feature was babysitting the LLM &#8212; parsing, validating, retrying, formatting &#8212; and maybe 30% was the product.</blockquote>
+<p>Every prompt change risked breaking the parsing logic, and every parsing change constrained the prompt. That's the context in which <a href="https://www.langchain.com/langchain">LangChain</a> looked like salvation: a mature framework (by the standards of the time) that promised to absorb the babysitting. We wrote an ADR, chose LangChain over <a href="https://sdk.vercel.ai">Vercel's AI SDK</a> (too young) and <a href="https://www.crewai.com">CrewAI</a> (Python-only, and we were a TypeScript shop), and committed. We even decided <em>not</em> to build an abstraction layer on top of it. Going all in felt efficient.</p>
+
+<p class="vx-eyebrow">2025</p>
+<h2 id="hiring" data-toc-title="A hiring decision">The hiring decision that became an architecture decision</h2>
+<p>Here's a migration you won't find an ADR for: LangChain in TypeScript became <a href="https://www.langchain.com/langgraph">LangGraph</a> in Python. Nobody sat down and wrote "we are switching languages because the person we hired knows Python" &#8212; but that's what happened, and at the time it was completely rational. In early 2025, Python <em>was</em> the language of AI. The ecosystem, the examples, the reference implementations, the future hiring pool: all Python-first. When we hired our first AI developer, betting on TypeScript for the AI layer would have felt contrarian. So we carved the LLM logic out of our existing services into a dedicated Python service, and moved on.</p>
+<p>What did it actually cost? More than we expected, in a way that had nothing to do with the language being hard. Python is not a complex language. But doing things <em>right</em> &#8212; developer experience, CI/CD, Docker builds, deployment hygiene &#8212; meant our team of TypeScript veterans had to ramp up on a whole ecosystem.</p>
+<p>Meanwhile, the AI developer we'd hired was genuinely good with AI but didn't have much production engineering experience. So we ended up with the worst of both worlds: the people who knew how to run services in production didn't know the language, and the person who knew the language wasn't the one setting up its scaffolding. Everyone was outside their comfort zone at the same time.</p>
+<p>We also created a split that a later migration would exist purely to undo: two stacks, one monorepo full of shared TypeScript libraries our AI service couldn't touch.</p>
+
+<p class="vx-eyebrow">October 2025</p>
+<h2 id="adk" data-toc-title="Google ADK">Google ADK, or "it worked locally"</h2>
+<p>By fall 2025 the LangGraph service worked, but it was heavy: custom orchestration, hand-rolled conversation state in Postgres, Docker builds through CircleCI, and a framework whose age was starting to show &#8212; API decisions made early in LangChain's life had calcified, and we were paying for them. When Google's <a href="https://google.github.io/adk-docs/">Agent Development Kit</a> came along, the promise was exciting. Less boilerplate than LangGraph, batteries included (tools like web search we didn't have to build), decent-looking documentation, and &#8212; the part that seduced a team tired of plumbing &#8212; managed deployment on <a href="https://cloud.google.com/vertex-ai/generative-ai/docs/agent-engine/overview">Vertex AI Agent Engine</a>. No containers, no CI/CD complexity. Google runs it for you.</p>
+<p>And we want to be fair: ADK, the framework, was good. Locally, everything worked. The problem was the second half of the promise. On Agent Engine, we were no longer in control of the agents we deployed. We didn't have access to all the logs. Behavior in production diverged from behavior on our machines, and we had no way to see why. We spent enormous energy on deployment issues for a platform whose entire pitch was that we wouldn't have to think about deployment.</p>
+<p>Among the highlights: a tracing library incorrectly instrumenting Agent Engine's requests and killing sessions, an upstream task-affinity bug we had to wait on a release for, and one memorable demo that failed because a service simply never started in production &#8212; something we could not have observed until it bit us.</p>
+<p>Two smaller things deserve a mention because they're the kind of signal we'd act on faster today. First, the documentation:</p>
+<blockquote>It looked great at a glance, but the more we read it, the more it read like it had been generated by AI &#8212; and the real answers to our problems consistently lived in GitHub issues. That's never a good sign.</blockquote>
+<p>Second, ADK couldn't instantiate agents dynamically at the time, so to support customer-created custom agents we maintained a pre-allocated pool of ten agent slots with FIFO eviction. When you're building a slot pool to fake a feature, the framework is telling you something.</p>
+
+<p class="vx-eyebrow">March 2026</p>
+<h2 id="bet">The two-week bet</h2>
+<p>This is where the story stops being about frameworks and starts being about migration cost.</p>
+<p>Our CTO tried to convince us we could migrate the entire AI infrastructure off ADK &#8212; Python, Agent Engine, all of it &#8212; in two weeks. We didn't believe him. It seemed far too ambitious: seven sub-agents, custom agents, a task worker, copilot features, evals, observability. He kept insisting that with <a href="https://code.claude.com/docs/en/overview">Claude Code</a> and modern AI tooling it would be easy, and he built a small prototype to prove the point. In the end, two developers migrated everything to <a href="https://mastra.ai">Mastra</a> in a week and a half. About fifty PRs. At the end we deleted the old stack in one pass: 395 files, roughly 37,000 lines of Python, gone.</p>
+<p>And Mastra was <em>good</em>. We were back in TypeScript, which meant the AI service could finally use all the shared libraries in our monorepo. Batteries included, real documentation that held up under reading, and a team that actually talked to us &#8212; they helped on a couple of issues, and contributing to the repo or just asking a question was easy. After the ADK experience, that alone felt like luxury.</p>
+<p>Which makes what happened next the strangest chapter to write: six weeks later, we left Mastra too. And for the first time, we weren't fleeing a framework that had failed us.</p>
+
+<p class="vx-eyebrow">April 2026</p>
+<h2 id="mcp">Beaten by our own MCP</h2>
+<p>Around that time, everyone at Vasco was using Claude daily &#8212; not just the developers, the whole company. And we had just shipped a public <a href="https://modelcontextprotocol.io">MCP</a> server exposing Vasco's data to any AI tool. So one day we plugged our own MCP into Claude Code, giving it the same access to our application and data that Gama had.</p>
+<p>It was better than Gama. A coding tool, pointed at our data through the same interface, produced better answers and better reports than the product we had spent over a year building. And because the whole company lived in Claude, everyone had already <em>felt</em> this gap personally. The frustration wasn't an engineering abstraction.</p>
+<p>We had dismissed the <a href="https://code.claude.com/docs/en/agent-sdk/overview">Claude Agent SDK</a> for a long time, and the reason sounds reasonable when you say it out loud: it's the framework underneath Claude Code, and we don't generate code &#8212; we help RevOps people. But sitting with that frustration, the argument inverted. Code is the hardest, most unforgiving agentic task there is: long horizons, huge contexts, zero tolerance for hand-waving. If a harness makes an agent great at <em>that</em>, why would it not be great at everything else?</p>
+<p>One evening, we built a prototype: the Claude Agent SDK wired to our existing MCP servers, a couple of real use cases. It worked so well it was almost annoying. Same data sources, dramatically better answers, better reports &#8212; it was even producing React components for our UI.</p>
+<p>We had real concerns, mainly cost: Claude models are significantly more expensive than the Gemini models we'd been running. So the prototype became an ADR with a cost analysis, that became a few short discussions, and less than 24 hours later the decision was made: the next two weeks, the team migrates everything from Mastra to the Claude Agent SDK.</p>
+<p>In December 2024 that decision would have taken us a cycle of committee meetings. The Mastra migration had taught us that migrations are cheap now; this one we didn't even hesitate on. The pitch to the rest of the company was also the easiest we've ever made. It wasn't "trust us, this framework benchmarks better." It was:</p>
+<blockquote>You know that thing you already use all day and love? That, inside Vasco.</blockquote>
+
+<p class="vx-eyebrow">The payoff</p>
+<h2 id="payoff" data-toc-title="The payoff">What a coding runtime gives an agent that never writes code</h2>
+<p>The thesis we wrote in the ADR was one sentence:</p>
+<blockquote>Stop reimplementing Claude Code and start running on it.</blockquote>
+<p>By then we had also noticed a pattern in ourselves: every time we implemented a new AI feature, our north star was "do the same thing Claude does." It still is today. Running on the same runtime just made the north star the default instead of a reimplementation effort. Concretely, here's what that meant for a revenue analytics product.</p>
+<p><strong>We deleted our supervisor machinery.</strong> Supervisor loop, subagent context isolation, agent handoffs, prompt caching, tool-result trimming &#8212; we had hand-rolled versions of all of these, in three frameworks, and they were never as good as the ones battle-tested by the most demanding agent workload in the industry. They're primitives now. We just use them.</p>
+<p><strong>The filesystem turned out to be the killer feature.</strong> This is the one nobody expects from a "coding" SDK. Our agents deal with large data: CRM exports, query results, transcript dumps. In every previous stack, big tool results bloated the context window &#8212; at one point a single 9MB activity payload poisoned every subsequent call in a conversation, and we built server-side trimmers and strippers to cope. With the Agent SDK, data-heavy tools write to a scratch directory instead, and the agent uses Read and Grep to pull in only the slice it needs. Watching an agent grep a revenue report it's writing, restructure a section, and edit it in place &#8212; exactly the way Claude Code works a codebase &#8212; was the moment the "it's only for code" objection died for good. The trimming infrastructure went in the bin.</p>
+<p><strong>Reasoning quality dissolved architecture.</strong> On the weaker model, a deep task like a weekly business review required a whole project system: decomposition into tasks, a runner, multi-stage orchestration. With a frontier model in a proper harness, the agent plans, analyzes, and writes the full review in a single conversation. Most of that scaffolding became optional overnight. Less code, lower latency, and &#8212; the part we were most nervous about &#8212; the economics work: with cheap fast models handling the data-fetching subagents and prompt caching doing its job, a deep report like a business review costs a few dollars, for output meaningfully better than what we shipped before.</p>
+<p><strong>The trade-offs are real, and we accepted them with open eyes.</strong> We are, in practice, committed to Anthropic. Another model can technically still be swapped in &#8212; and we keep that option as a fallback if Claude models are ever down &#8212; but it's an emergency exit, not a long-term path; the point of the migration is the harness and the models together. The cost floor is higher than the Gemini Flash and Pro models we ran before, even after caching and model routing. Observability and evals are no longer first-party; we assemble our own. We wrote all of this down before migrating, and we'd rather own these trade-offs than keep paying the tax of being a worse Claude Code.</p>
+
+<p class="vx-eyebrow">Epilogue</p>
+<h2 id="epilogue" data-toc-title="What we'd tell 2024">What we'd tell our December 2024 selves</h2>
+<p>Four frameworks in sixteen months looks like churn. But look at the trajectory of the migrations themselves: the move to Python took months to digest; ADK to Mastra took a week and a half; Mastra to the Claude Agent SDK was decided in a day and executed in two weeks, with existing agents running undisturbed behind a feature flag the whole time. Migration cost has collapsed &#8212; largely because of the same tools we ended up building on. When switching is this cheap, framework loyalty is the expensive choice. Every ADR we wrote was right <em>at the time it was written</em>, and being willing to overwrite them is the only reason Gama is good today.</p>
+<p>The other lesson took us longer to accept, because it goes against every engineering instinct: sometimes, when the model can't do what you need, the right move is to give up. Not on the product &#8212; on the workaround. The regex that re-formats numbers, the trimmer that fights context bloat, the slot pool that fakes dynamic agents: all of it was depreciation-in-progress the day it was written, engineering effort spent compensating for a model that a release six weeks later made unnecessary. These days we try to recognize that moment, park the problem, and wait.</p>
+<p>Though to be honest, since we moved to Claude, it doesn't happen much anymore.</p>
+
+<hr>
+<p class="outro">Gama runs on the Claude Agent SDK inside Vasco. If watching a team delete 37,000 lines of their own orchestration code sounds like fun, <a href="https://jobs.ashbyhq.com/vasco">sometimes we hire</a>.</p>
