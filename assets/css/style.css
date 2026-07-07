@@ -264,6 +264,13 @@ a:hover   { color: var(--accent-2); }
   color: var(--muted);
   margin: 20px 0 0;
 }
+/* --- 404 ------------------------------------------------------------------ */
+.vx-404-links {
+  margin: 32px 0 0;
+  display: flex;
+  gap: 28px;
+}
+
 .vx-year-group { padding: 20px 0 8px; }
 .vx-year {
   font-family: 'IBM Plex Mono', monospace;
