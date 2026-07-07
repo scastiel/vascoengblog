@@ -7,13 +7,17 @@
 <meta name="description" content="{{ og_description }}">
 {% endif %}
 
-<!-- Open Graph / social cards (no image, by design). -->
+<!-- Open Graph / social cards. -->
 <link rel="canonical" href="{{ page.url | absolute_url }}">
 <meta property="og:type" content="{% if page.layout == 'post' %}article{% else %}website{% endif %}">
 <meta property="og:site_name" content="{{ site.title }}">
 <meta property="og:title" content="{{ og_title }}">
 {% if og_description != "" %}<meta property="og:description" content="{{ og_description }}">{% endif %}
 <meta property="og:url" content="{{ page.url | absolute_url }}">
+<meta property="og:image" content="{{ '/assets/brand/social-icon-1200.png' | absolute_url }}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="1200">
+<meta property="og:image:alt" content="{{ site.title }}">
 {% if page.layout == 'post' %}
 <meta property="article:author" content="{{ page.author | default: site.author.name }}">
 {% if page.date %}<meta property="article:published_time" content="{{ page.date | date_to_xmlschema }}">{% endif %}
@@ -21,6 +25,7 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="{{ og_title }}">
 {% if og_description != "" %}<meta name="twitter:description" content="{{ og_description }}">{% endif %}
+<meta name="twitter:image" content="{{ '/assets/brand/social-icon-1200.png' | absolute_url }}">
 
 <!-- No-flash theme init: use the stored override if set, else the OS preference. -->
 <script>(function(){try{var t=localStorage.getItem('vx-theme');if(t!=='light'&&t!=='dark')t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches)?'light':'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();</script>
