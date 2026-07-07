@@ -1,0 +1,27 @@
+---
+# RSS 2.0 feed, hand-authored to avoid the jekyll-feed dependency.
+layout: null
+permalink: /feed.xml
+---
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>{{ site.title | escape }}</title>
+    <link>{{ site.url }}{{ site.baseurl }}/</link>
+    <atom:link href="{{ '/feed.xml' | absolute_url }}" rel="self" type="application/rss+xml" />
+    <description>{{ site.description | strip_html | strip_newlines | escape }}</description>
+    <language>en</language>
+    {% assign latest = site.posts | first %}{% if latest %}<lastBuildDate>{{ latest.date | date_to_rfc822 }}</lastBuildDate>{% endif %}
+    {% for post in site.posts %}
+    <item>
+      <title>{{ post.title | escape }}</title>
+      <link>{{ post.url | absolute_url }}</link>
+      <guid isPermaLink="true">{{ post.url | absolute_url }}</guid>
+      <pubDate>{{ post.date | date_to_rfc822 }}</pubDate>
+      {% assign desc = post.summary | default: post.dek %}{% if desc %}<description>{{ desc | strip_html | strip_newlines | escape }}</description>{% endif %}
+      {% if post.author %}<author>{{ post.author | escape }}</author>{% endif %}
+      {% if post.category_label %}<category>{{ post.category_label | escape }}</category>{% endif %}
+    </item>
+    {% endfor %}
+  </channel>
+</rss>
