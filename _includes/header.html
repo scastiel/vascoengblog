@@ -2,13 +2,14 @@
 <header class="vx-header{% if include.sticky %} vx-header--sticky{% endif %}">
   <div class="vx-bar">
     <a class="vx-wordmark" href="{{ '/' | relative_url }}">
-      <span class="sq"></span>
-      <span class="name">Vasco</span>
-      <span class="sub">Engineering</span>
+      {% include vasco-eng-mark.svg %}
+      <span class="txt">
+        <span class="name">Vasco</span>
+        <span class="sub">Engineering</span>
+      </span>
     </a>
     <nav class="vx-nav">
       <a href="{{ '/articles/' | relative_url }}"{% if include.active == 'articles' %} class="active"{% endif %}>Articles</a>
-      <a class="ext" href="https://vasco.app">vasco.app&#8599;</a>
       <button class="vx-toggle" data-theme-toggle aria-label="Toggle color theme" title="Toggle theme"><span class="vx-theme-icon">&#9728;</span></button>
     </nav>
   </div>
