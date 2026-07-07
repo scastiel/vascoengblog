@@ -58,12 +58,14 @@ a:hover   { color: var(--accent-2); }
   gap: 12px;
   color: var(--text);
 }
-.vx-wordmark .sq {
-  width: 11px;
-  height: 11px;
-  background: var(--accent);
-  display: inline-block;
+.vx-wordmark .vx-mark {
+  width: 40px;
+  height: 40px;
+  display: block;
+  flex: none;
+  color: var(--text);
 }
+.vx-wordmark .txt  { display: flex; flex-direction: column; line-height: 1.05; }
 .vx-wordmark .name { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; }
 .vx-wordmark .sub  { font-size: 16px; font-weight: 400; letter-spacing: -0.01em; color: var(--muted); }
 
@@ -666,6 +668,13 @@ a.vx-pn-cell:hover { background: var(--panel); }
   .vx-h1    { font-size: 33px; }
   .vx-row   { grid-template-columns: 1fr; row-gap: 6px; }
   .vx-rowdate { order: -1; }
+  .vx-container,
+  .vx-bar,
+  .vx-main--padded,
+  .vx-footer .inner,
+  .vx-post-head,
+  .vx-grid { padding-left: 16px; padding-right: 16px; }
+  .vx-about { grid-template-columns: 1fr; row-gap: 14px; }
 }
 @media (max-width: 620px) {
   .vx-ngrid { grid-template-columns: repeat(2, 1fr); }
