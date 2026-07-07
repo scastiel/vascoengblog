@@ -43,6 +43,8 @@ _posts/*.html          Posts, authored as HTML
 
 ## Conventions
 
+- **Updating a branch with `main`: always rebase, never merge.** Use `git fetch`
+  then `git rebase origin/main` to keep history linear. Do not `git merge origin/main`.
 - **No duplication.** Shared chrome lives in `_includes`/`_layouts`. The design's
   original inline styles were lifted into `assets/css/style.css` as `.vx-*` classes;
   prefer adding/reusing a class over inline styles.
