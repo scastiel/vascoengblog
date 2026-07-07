@@ -45,6 +45,15 @@ _posts/*.html          Posts, authored as HTML
 
 - **Updating a branch with `main`: always rebase, never merge.** Use `git fetch`
   then `git rebase origin/main` to keep history linear. Do not `git merge origin/main`.
+- **Typography.** Post titles (front-matter `title:` and any `<h2>` headings) use
+  **Title Case** — capitalize principal words; keep articles, coordinating
+  conjunctions, and short prepositions (`a`, `an`, `the`, `and`, `or`, `in`, `of`,
+  `on`, `to`, `for`, `or`, …) lowercase unless they're the first/last word. Use
+  **typographically correct quotes and apostrophes** everywhere prose is displayed
+  (post bodies, `summary`/`dek` front matter): curly apostrophe `’` (`&#8217;`),
+  curly double quotes `“…”` (`&#8220;`/`&#8221;`), curly single quotes `‘…’`
+  (`&#8216;`/`&#8217;`). Never leave straight `'` or `"` in rendered text. (Em dashes
+  are already written as `&#8212;`.)
 - **No duplication.** Shared chrome lives in `_includes`/`_layouts`. The design's
   original inline styles were lifted into `assets/css/style.css` as `.vx-*` classes;
   prefer adding/reusing a class over inline styles.
