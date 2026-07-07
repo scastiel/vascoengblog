@@ -61,7 +61,8 @@ _posts/*.html          Posts, authored as HTML
 - **External links** (any host ≠ the site's) open in a new tab with `rel="noopener"`,
   applied in `blog.js`. Internal links stay in the same tab.
 - **Careers** links point to `https://jobs.ashbyhq.com/vasco`.
-- **Permalinks** are `/:title/` (clean slugs, no dates in the URL).
+- **Permalinks** are `/articles/:title/` (clean slugs under `/articles/`, no dates
+  in the URL), matching the live site at engineering.vasco.app.
 
 ## Prose helpers (inside a post body)
 

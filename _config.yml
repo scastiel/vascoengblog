@@ -6,8 +6,8 @@ description: >-
 url: "https://engineering.vasco.app"
 baseurl: ""
 
-# Clean per-post URLs, e.g. /four-agent-frameworks/
-permalink: /:title/
+# Clean per-post URLs under /articles/, e.g. /articles/four-agent-frameworks/
+permalink: /articles/:title/
 
 # Default author byline. Any post can override these in its front matter.
 author:
