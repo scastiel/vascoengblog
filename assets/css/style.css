@@ -301,7 +301,7 @@ a:hover   { color: var(--accent-2); }
   line-height: 1.08;
   letter-spacing: -0.03em;
   font-weight: 600;
-  max-width: 18ch;
+  max-width: 24ch;
 }
 .vx-dek {
   font-family: 'Source Serif 4', Georgia, serif;
@@ -499,7 +499,9 @@ a:hover   { color: var(--accent-2); }
 .vx-prose pre .c { color: var(--muted2); }  /* comments */
 .vx-prose pre .k { color: var(--accent); }  /* keywords */
 
-.vx-eyebrow {
+/* Scoped under .vx-prose so it beats `.vx-prose p` (which would otherwise
+   force a 24px bottom margin and detach the eyebrow from its heading). */
+.vx-prose .vx-eyebrow {
   font-family: 'IBM Plex Mono', monospace;
   font-size: 11.5px;
   font-weight: 500;
