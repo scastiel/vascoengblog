@@ -3,10 +3,11 @@
   "configurations": [
     {
       "name": "jekyll",
+      "autoPort": true,
       "runtimeExecutable": "bash",
       "runtimeArgs": [
         "-lc",
-        "export PATH=\"/opt/homebrew/opt/ruby/bin:$PATH\"; export GEM_HOME=\"$HOME/.gem/newengblog\"; export PATH=\"$GEM_HOME/bin:$PATH\"; exec bundle exec jekyll serve --port 4000 --host 127.0.0.1"
+        "export PATH=\"/opt/homebrew/opt/ruby/bin:$PATH\"; export GEM_HOME=\"$HOME/.gem/newengblog\"; export PATH=\"$GEM_HOME/bin:$PATH\"; exec bundle exec jekyll serve --host 127.0.0.1 --port ${PORT:-4000}"
       ],
       "port": 4000
     }
