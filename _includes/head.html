@@ -5,8 +5,8 @@
 <meta name="description" content="{{ page.dek | default: page.summary | default: site.description | strip_html | strip_newlines | escape }}">
 {% endif %}
 
-<!-- No-flash theme init: set data-theme before first paint. -->
-<script>(function(){try{var t=localStorage.getItem('vx-theme');if(t!=='light'&&t!=='dark')t='dark';document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();</script>
+<!-- No-flash theme init: use the stored override if set, else the OS preference. -->
+<script>(function(){try{var t=localStorage.getItem('vx-theme');if(t!=='light'&&t!=='dark')t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches)?'light':'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();</script>
 
 <!-- Design tokens live inline so the theme is present before the stylesheet loads. -->
 <style id="vx-theme-vars">

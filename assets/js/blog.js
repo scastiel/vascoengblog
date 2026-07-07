@@ -21,6 +21,26 @@
     applyThemeIcon();
   }
 
+  function storedTheme() {
+    try {
+      var t = localStorage.getItem('vx-theme');
+      return (t === 'light' || t === 'dark') ? t : null;
+    } catch (e) { return null; }
+  }
+
+  // Follow OS theme changes live, unless the user has overridden via the button.
+  function watchSystemTheme() {
+    if (!window.matchMedia) return;
+    var mq = window.matchMedia('(prefers-color-scheme: dark)');
+    var onChange = function (e) {
+      if (storedTheme()) return; // user override wins
+      docEl.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+      applyThemeIcon();
+    };
+    if (mq.addEventListener) mq.addEventListener('change', onChange);
+    else if (mq.addListener) mq.addListener(onChange); // older Safari
+  }
+
   /* --- TOC: build from the post's own <h2 id> headings, then scroll-spy -- */
   function initToc() {
     var nav = document.querySelector('[data-toc-nav]');
@@ -69,6 +89,8 @@
 
     var toggles = document.querySelectorAll('[data-theme-toggle]');
     for (var i = 0; i < toggles.length; i++) toggles[i].addEventListener('click', toggleTheme);
+
+    watchSystemTheme();
 
     // Open external links (anything off this site) in a new tab.
     var externals = document.querySelectorAll('a[href^="http"]');

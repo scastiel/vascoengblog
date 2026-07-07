@@ -47,8 +47,11 @@ _posts/*.html          Posts, authored as HTML
   original inline styles were lifted into `assets/css/style.css` as `.vx-*` classes;
   prefer adding/reusing a class over inline styles.
 - **Design tokens** are CSS custom properties that flip on `data-theme`
-  (`dark` default / `light`). They're inlined in `head.html` with a no-flash script so
-  the theme is set before first paint; `localStorage['vx-theme']` persists it.
+  (`dark`/`light`), inlined in `head.html` with a no-flash script that runs before
+  first paint. Theme resolution: a stored `localStorage['vx-theme']` override wins;
+  otherwise the OS `prefers-color-scheme` is used (falling back to dark). The header
+  button sets the persisted override; `blog.js` also follows live OS changes while no
+  override is set.
 - **Author byline** defaults come from `_config.yml` (`defaults` → posts). Currently
   Sebastien Castiel / Vasco Engineering / SC. A post can override via front matter
   (`author`, `author_role`, `author_initials`).
