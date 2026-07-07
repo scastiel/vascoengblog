@@ -1,9 +1,26 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{% if page.title and page.url != "/" %}{{ page.title }} · {{ site.title }}{% else %}{{ site.title }}{% endif %}</title>
+{%- capture og_title -%}{% if page.title and page.url != "/" %}{{ page.title }} · {{ site.title }}{% else %}{{ site.title }}{% endif %}{%- endcapture -%}
+{%- capture og_description -%}{{ page.dek | default: page.summary | default: site.description | strip_html | strip_newlines | escape }}{%- endcapture -%}
+<title>{{ og_title }}</title>
 {% if page.dek or page.summary or site.description %}
-<meta name="description" content="{{ page.dek | default: page.summary | default: site.description | strip_html | strip_newlines | escape }}">
+<meta name="description" content="{{ og_description }}">
 {% endif %}
+
+<!-- Open Graph / social cards (no image, by design). -->
+<link rel="canonical" href="{{ page.url | absolute_url }}">
+<meta property="og:type" content="{% if page.layout == 'post' %}article{% else %}website{% endif %}">
+<meta property="og:site_name" content="{{ site.title }}">
+<meta property="og:title" content="{{ og_title }}">
+{% if og_description != "" %}<meta property="og:description" content="{{ og_description }}">{% endif %}
+<meta property="og:url" content="{{ page.url | absolute_url }}">
+{% if page.layout == 'post' %}
+<meta property="article:author" content="{{ page.author | default: site.author.name }}">
+{% if page.date %}<meta property="article:published_time" content="{{ page.date | date_to_xmlschema }}">{% endif %}
+{% endif %}
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="{{ og_title }}">
+{% if og_description != "" %}<meta name="twitter:description" content="{{ og_description }}">{% endif %}
 
 <!-- No-flash theme init: use the stored override if set, else the OS preference. -->
 <script>(function(){try{var t=localStorage.getItem('vx-theme');if(t!=='light'&&t!=='dark')t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches)?'light':'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();</script>
