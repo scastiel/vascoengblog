@@ -20,7 +20,6 @@ wraps it in the post layout, so you only write the article body.
 ---
 title: "Your title"
 date: 2026-07-07
-category_label: Architecture        # mono eyebrow above the title (optional)
 summary: One line shown in the Home / Articles lists.
 dek: Optional italic standfirst under the title.
 ---

@@ -143,13 +143,6 @@ a:hover   { color: var(--accent-2); }
 .vx-footer a { color: var(--muted2); }
 
 /* --- Shared type helpers -------------------------------------------------- */
-.vx-eyebrow-accent {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 12px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--accent);
-}
 .vx-mono-label {
   font-family: 'IBM Plex Mono', monospace;
   font-size: 13px;
@@ -164,7 +157,6 @@ a:hover   { color: var(--accent-2); }
   padding: 96px 0 88px;
   border-bottom: 1px solid var(--border);
 }
-.vx-hero-section .vx-eyebrow-accent { display: block; margin-bottom: 28px; }
 .vx-hero {
   margin: 0;
   font-size: 52px;
@@ -266,7 +258,6 @@ a:hover   { color: var(--accent-2); }
   padding: 88px 0 44px;
   border-bottom: 1px solid var(--border);
 }
-.vx-title-section .vx-eyebrow-accent { display: block; margin-bottom: 22px; }
 .vx-title {
   margin: 0;
   font-size: 48px;
@@ -310,17 +301,8 @@ a:hover   { color: var(--accent-2); }
   font-size: 12.5px;
   color: var(--muted);
 }
-.vx-cat {
-  display: block;
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 12px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--accent);
-  margin: 34px 0 20px;
-}
 .vx-h1 {
-  margin: 0;
+  margin: 28px 0 0;
   font-size: 44px;
   line-height: 1.08;
   letter-spacing: -0.03em;
