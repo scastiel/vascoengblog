@@ -63,9 +63,10 @@ _posts/*.html          Posts, authored as HTML
   otherwise the OS `prefers-color-scheme` is used (falling back to dark). The header
   button sets the persisted override; `blog.js` also follows live OS changes while no
   override is set.
-- **Author byline** defaults come from `_config.yml` (`defaults` → posts). Currently
-  Sebastien Castiel / Vasco Engineering / SC. A post can override via front matter
-  (`author`, `author_role`, `author_initials`).
+- **Author byline** is declared per-post in front matter (`author`, `author_role`,
+  `author_initials`) — there is no global default author. Setting `author_url` (e.g. a
+  LinkedIn profile) renders the author name as a link; being an external host, it opens
+  in a new tab via `blog.js`.
 - **TOC** is built client-side from `.vx-prose h2[id]` (`blog.js` → `initToc`). Posts
   never restate their own outline. Use `data-toc-title` for a shorter sidebar label.
 - **Prev/next** uses Jekyll's `page.previous`/`page.next` (Newer = next, Older = prev).

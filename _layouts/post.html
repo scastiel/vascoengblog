@@ -13,7 +13,7 @@ footer_home: true
   <div class="vx-byline">
     <span class="vx-avatar">{{ page.author_initials }}</span>
     <span class="vx-author">
-      <span class="vx-author-name">{{ page.author }}</span>
+      <span class="vx-author-name">{% if page.author_url %}<a href="{{ page.author_url }}" class="vx-author-link">{{ page.author }}</a>{% else %}{{ page.author }}{% endif %}</span>
       <span class="vx-author-role">{{ page.author_role }}</span>
     </span>
     <span class="vx-divider"></span>
