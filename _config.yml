@@ -9,26 +9,19 @@ baseurl: ""
 # Clean per-post URLs under /articles/, e.g. /articles/four-agent-frameworks/
 permalink: /articles/:title/
 
-# Default author byline. Any post can override these in its front matter.
-author:
-  name: Sebastien Castiel
-  role: Vasco Engineering
-  initials: SC
-
 markdown: kramdown
 kramdown:
   input: GFM
 
-# Site defaults: every file in _posts/ gets the post layout + author byline.
+# Site defaults: every file in _posts/ gets the post layout. Each post declares
+# its own author/author_role/author_initials in front matter, and may set
+# author_url (e.g. a LinkedIn profile) to render the name as a link.
 defaults:
   - scope:
       path: ""
       type: posts
     values:
       layout: post
-      author: Sebastien Castiel
-      author_role: Vasco Engineering
-      author_initials: SC
 
 # Not part of the built site.
 exclude:
