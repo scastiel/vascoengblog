@@ -10,7 +10,7 @@
     </a>
     <nav class="vx-nav">
       <a href="{{ '/articles/' | relative_url }}"{% if include.active == 'articles' %} class="active"{% endif %}>Articles</a>
-      <button class="vx-toggle" data-theme-toggle aria-label="Toggle color theme" title="Toggle theme"><span class="vx-theme-icon">&#9728;</span></button>
+      <button class="vx-toggle" data-theme-toggle aria-label="Toggle color theme" title="Toggle theme">{% include icon-sun.svg class="vx-theme-icon vx-theme-icon--sun" %}{% include icon-moon.svg class="vx-theme-icon vx-theme-icon--moon" %}</button>
     </nav>
   </div>
 </header>

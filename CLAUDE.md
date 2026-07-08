@@ -34,6 +34,7 @@ _layouts/default.html  Page shell: <head>, header, footer, JS
 _layouts/post.html     Post: head block, TOC aside, prose, prev/next (extends default)
 _includes/head.html    Meta, no-flash theme script, inline design tokens, fonts, CSS link
 _includes/{header,footer,post-row}.html
+_includes/icon-*.svg   Inlined Lucide icons (sun, moon, linkedin) — see "Icons"
 assets/css/style.css   All design tokens + every component class
 assets/js/blog.js      Theme toggle · external-links-in-new-tab · TOC + scroll-spy
 index.html             Home (/)      — most recent posts + about
@@ -66,7 +67,8 @@ _posts/*.html          Posts, authored as HTML
 - **Author byline** is declared per-post in front matter (`author`, `author_role`,
   `author_initials`) — there is no global default author. Setting `author_url` (e.g. a
   LinkedIn profile) renders the author name as a link; being an external host, it opens
-  in a new tab via `blog.js`.
+  in a new tab via `blog.js`. When `author_url` contains `linkedin`, a small LinkedIn
+  icon is also shown next to the name (see "Icons").
 - **TOC** is built client-side from `.vx-prose h2[id]` (`blog.js` → `initToc`). Posts
   never restate their own outline. Use `data-toc-title` for a shorter sidebar label.
 - **Prev/next** uses Jekyll's `page.previous`/`page.next` (Newer = next, Older = prev).
@@ -75,6 +77,38 @@ _posts/*.html          Posts, authored as HTML
 - **Careers** links point to `https://jobs.ashbyhq.com/vasco`.
 - **Permalinks** are `/articles/:title/` (clean slugs under `/articles/`, no dates
   in the URL), matching the live site at engineering.vasco.app.
+
+## Icons
+
+Icons are **inlined SVGs**, one per file in `_includes/icon-<name>.svg` — we do **not**
+ship any icon library or font, so the bundle stays tiny (only the icons actually used
+are in the repo). Two sources, by kind:
+
+- **UI icons** come from **[Lucide](https://lucide.dev)** (outlined, `24×24`, stroked).
+  Current set: `sun`, `moon` (theme toggle).
+- **Brand marks** come from **[theSVG](https://thesvg.org)** in the **mono** variant
+  (filled, single color). Lucide deprecated its brand icons, so don't look there for
+  these. Current set: `linkedin` (author byline).
+
+**Adding a new icon:**
+
+1. Grab the source SVG:
+   - Lucide UI icon → copy from <https://lucide.dev/icons/> (or `lucide-static`).
+   - Brand mark → open `https://thesvg.org/icon/<name>`, pick the **mono** variant.
+     (Equivalently, take `default.svg` from the `glincker/thesvg` repo under
+     `public/icons/<name>/` and swap its brand `fill` for `currentColor`.)
+2. Save it as `_includes/icon-<name>.svg`, matching the existing files: replace the
+   `class` attribute with `class="vx-icon {{ include.class }}"` and add
+   `aria-hidden="true" focusable="false"`. Keep the source's own `viewBox`. Make it
+   inherit color: Lucide icons already use `stroke="currentColor"`; for a brand mark set
+   `fill="currentColor"` (and drop any hard-coded brand color).
+3. Drop it in with `{% include icon-<name>.svg %}`, optionally passing extra classes:
+   `{% include icon-<name>.svg class="my-modifier" %}`.
+
+Icons inherit color from `currentColor` and size from `.vx-icon` (`1em` by default;
+override with a modifier class). The theme toggle shows the sun in dark mode and the
+moon in light mode via CSS only (`.vx-theme-icon` rules keyed off `[data-theme]`), so
+the right glyph is present before first paint — no flash and no JS needed to swap it.
 
 ## Prose helpers (inside a post body)
 
