@@ -103,6 +103,21 @@ a:hover   { color: var(--accent-2); }
   color: var(--text);
 }
 
+/* --- Inline icons (Lucide, embedded per-icon in _includes/icon-*.svg) ----- */
+.vx-icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.125em;
+  flex: none;
+}
+/* Theme toggle swaps sun (shown in dark) / moon (shown in light) via CSS only,
+   so the correct glyph is present before first paint — no flash, no JS. */
+.vx-theme-icon { width: 16px; height: 16px; }
+.vx-toggle .vx-theme-icon { display: none; }
+[data-theme="dark"]  .vx-toggle .vx-theme-icon--sun,
+[data-theme="light"] .vx-toggle .vx-theme-icon--moon { display: block; }
+
 /* --- Main / footer -------------------------------------------------------- */
 .vx-main { flex: 1; width: 100%; }
 .vx-main--padded {
@@ -347,8 +362,11 @@ a:hover   { color: var(--accent-2); }
 }
 .vx-author      { display: flex; flex-direction: column; gap: 2px; }
 .vx-author-name { font-size: 14px; font-weight: 600; color: var(--text); }
-.vx-author-link { color: inherit; text-decoration: none; border-bottom: 1px solid var(--border); transition: border-color 0.15s ease; }
-.vx-author-link:hover { border-bottom-color: var(--accent); }
+.vx-author-link { display: inline-flex; align-items: center; gap: 6px; color: inherit; text-decoration: none; }
+.vx-author-link-text { border-bottom: 1px solid var(--border); transition: border-color 0.15s ease; }
+.vx-author-link:hover .vx-author-link-text { border-bottom-color: var(--accent); }
+.vx-author-social-icon { width: 12px; height: 12px; color: var(--muted); transition: color 0.15s ease; }
+.vx-author-link:hover .vx-author-social-icon { color: var(--accent); }
 .vx-author-role { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted2); }
 .vx-divider     { width: 1px; height: 26px; background: var(--border); margin: 0 4px; }
 .vx-date        { font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; color: var(--muted); }

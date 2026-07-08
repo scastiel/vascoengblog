@@ -13,7 +13,7 @@ footer_home: true
   <div class="vx-byline">
     <span class="vx-avatar">{{ page.author_initials }}</span>
     <span class="vx-author">
-      <span class="vx-author-name">{% if page.author_url %}<a href="{{ page.author_url }}" class="vx-author-link">{{ page.author }}</a>{% else %}{{ page.author }}{% endif %}</span>
+      <span class="vx-author-name">{% if page.author_url %}<a href="{{ page.author_url }}" class="vx-author-link"{% if page.author_url contains 'linkedin' %} aria-label="{{ page.author }} on LinkedIn"{% endif %}><span class="vx-author-link-text">{{ page.author }}</span>{% if page.author_url contains 'linkedin' %}{% include icon-linkedin.svg class="vx-author-social-icon" %}{% endif %}</a>{% else %}{{ page.author }}{% endif %}</span>
       <span class="vx-author-role">{{ page.author_role }}</span>
     </span>
     <span class="vx-divider"></span>

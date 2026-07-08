@@ -7,19 +7,12 @@
   var docEl = document.documentElement;
 
   /* --- Theme toggle ------------------------------------------------------ */
-  function applyThemeIcon() {
-    var t = docEl.getAttribute('data-theme') || 'dark';
-    // Glyph shows the mode you'd switch *to*: sun in dark, moon in light.
-    var glyph = t === 'light' ? '☾' : '☀';
-    var icons = document.querySelectorAll('.vx-theme-icon');
-    for (var i = 0; i < icons.length; i++) icons[i].textContent = glyph;
-  }
-
+  // The sun/moon icons are swapped purely in CSS off [data-theme], so flipping
+  // the attribute is all we need here (see .vx-theme-icon rules).
   function toggleTheme() {
     var next = docEl.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
     docEl.setAttribute('data-theme', next);
     try { localStorage.setItem('vx-theme', next); } catch (e) {}
-    applyThemeIcon();
   }
 
   function storedTheme() {
@@ -36,7 +29,6 @@
     var onChange = function (e) {
       if (storedTheme()) return; // user override wins
       docEl.setAttribute('data-theme', e.matches ? 'dark' : 'light');
-      applyThemeIcon();
     };
     if (mq.addEventListener) mq.addEventListener('change', onChange);
     else if (mq.addListener) mq.addListener(onChange); // older Safari
@@ -203,8 +195,6 @@
 
   /* --- Boot -------------------------------------------------------------- */
   function init() {
-    applyThemeIcon();
-
     var toggles = document.querySelectorAll('[data-theme-toggle]');
     for (var i = 0; i < toggles.length; i++) toggles[i].addEventListener('click', toggleTheme);
 
