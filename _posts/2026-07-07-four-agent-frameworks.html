@@ -90,5 +90,28 @@ author_url: https://www.linkedin.com/in/scastiel/
 <p>The other lesson took us longer to accept, because it goes against every engineering instinct: sometimes, when the model can’t do what you need, the right move is to give up. Not on the product &#8212; on the workaround. The regex that re-formats numbers, the trimmer that fights context bloat, the slot pool that fakes dynamic agents: all of it was depreciation-in-progress the day it was written, engineering effort spent compensating for a model that a release six weeks later made unnecessary. These days we try to recognize that moment, park the problem, and wait.</p>
 <p>Though to be honest, since we moved to Claude, it doesn’t happen much anymore.</p>
 
+<!-- Hidden source for the inline glossary tooltips (see blog.js initGlossary). -->
+<div class="vx-glossary" hidden>
+<hr>
+<h2 id="glossary" data-toc-title="Glossary">Glossary</h2>
+<p><strong>LLM (Large Language Model)</strong>: AI models trained on vast amounts of text data that can understand and generate human-like language. Examples include Claude, GPT, and Gemini.</p>
+<p><strong>Hallucination</strong>: When an LLM confidently produces information that is plausible-sounding but factually wrong or invented.</p>
+<p><strong>Prompt engineering</strong>: The practice of carefully wording and structuring the instructions given to an LLM to steer it toward the output you want.</p>
+<p><strong>Structured output</strong>: Forcing an LLM to return data in an exact machine-readable shape (like JSON with specific fields) rather than free-form prose, so downstream code can rely on it.</p>
+<p><strong>ADR (Architecture Decision Record)</strong>: A short document that captures a significant technical decision — the context, the options considered, and the consequences — so the reasoning survives after the decision is made.</p>
+<p><strong>CI/CD (Continuous Integration / Continuous Delivery)</strong>: The automated pipeline that builds, tests, and ships code changes, so that merging triggers a repeatable path to production.</p>
+<p><strong>ADK (Agent Development Kit)</strong>: Google's framework for building LLM agents, paired with Vertex AI Agent Engine as a managed way to deploy and run them.</p>
+<p><strong>FIFO (First In, First Out)</strong>: An eviction policy where the oldest item is removed first — here, recycling the least recently allocated agent slot.</p>
+<p><strong>Eval (evaluation)</strong>: A repeatable test that scores an agent's output for quality or correctness, used to catch regressions as prompts and models change.</p>
+<p><strong>MCP (Model Context Protocol)</strong>: An open standard for exposing data and tools to AI applications through a uniform interface, so any compatible model or client can consume them.</p>
+<p><strong>Agent SDK (Claude Agent SDK)</strong>: Anthropic's framework for building agents on the same runtime that powers Claude Code — supervisor loops, subagents, prompt caching, and filesystem access included.</p>
+<p><strong>Subagent</strong>: A secondary agent spawned by a main ("supervisor") agent to handle a narrower task in an isolated context, keeping the main conversation focused.</p>
+<p><strong>Supervisor loop</strong>: The top-level control loop that plans an agent's work, dispatches tools or subagents, and decides when the task is done.</p>
+<p><strong>Prompt caching</strong>: Reusing the model's processing of a repeated prompt prefix across calls, cutting latency and cost when much of the context is unchanged.</p>
+<p><strong>Context window</strong>: The finite amount of text (measured in tokens) an LLM can consider at once; large tool results can crowd it out and degrade later responses.</p>
+<p><strong>Feature flag</strong>: A runtime switch that turns functionality on or off without redeploying, letting a new system run alongside the old one and roll back instantly.</p>
+<p><strong>RevOps (Revenue Operations)</strong>: A business function that aligns sales, marketing, and customer success operations to drive growth through process optimization and data analysis.</p>
+</div>
+
 <hr>
 <p class="outro">Gama runs on the Claude Agent SDK inside Vasco. If watching a team delete 37,000 lines of their own orchestration code sounds like fun, <a href="https://jobs.ashbyhq.com/vasco">sometimes we hire</a>.</p>
