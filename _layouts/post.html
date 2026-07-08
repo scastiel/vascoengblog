@@ -10,7 +10,7 @@ footer_home: true
   {% if page.dek %}<p class="vx-dek">{{ page.dek }}</p>{% endif %}
 
   <div class="vx-byline">
-    <span class="vx-avatar">{{ page.author_initials }}</span>
+    {% if page.author_avatar %}<img class="vx-avatar vx-avatar--photo" src="{{ page.author_avatar | relative_url }}" alt="" width="36" height="36" loading="lazy" decoding="async">{% else %}<span class="vx-avatar">{{ page.author_initials }}</span>{% endif %}
     <span class="vx-author">
       <span class="vx-author-name">{% if page.author_url %}<a href="{{ page.author_url }}" class="vx-author-link"{% if page.author_url contains 'linkedin' %} aria-label="{{ page.author }} on LinkedIn"{% endif %}><span class="vx-author-link-text">{{ page.author }}</span>{% if page.author_url contains 'linkedin' %}{% include icon-linkedin.svg class="vx-author-social-icon" %}{% endif %}</a>{% else %}{{ page.author }}{% endif %}</span>
       <span class="vx-author-role">{{ page.author_role }}</span>

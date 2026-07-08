@@ -345,6 +345,19 @@ a:hover   { color: var(--accent-2); }
   font-family: 'IBM Plex Mono', monospace;
   letter-spacing: 0.03em;
 }
+/* Author photo: same box as the initials avatar, desaturated so it reads as
+   monochrome; per-theme filters nudge it to sit on the dark/light surface.
+   Hover restores full color via a transition. */
+.vx-avatar--photo {
+  padding: 0;
+  object-fit: cover;
+  background: var(--surface);
+  filter: grayscale(0.5) contrast(0.97);
+  transition: filter 0.25s ease;
+}
+.vx-avatar--photo:hover { filter: grayscale(0) contrast(1); }
+[data-theme="dark"] .vx-avatar--photo { filter: grayscale(0.5) brightness(0.92) contrast(1.05); }
+[data-theme="dark"] .vx-avatar--photo:hover { filter: grayscale(0) brightness(1) contrast(1); }
 .vx-author      { display: flex; flex-direction: column; gap: 2px; }
 .vx-author-name { font-size: 14px; font-weight: 600; color: var(--text); }
 .vx-author-link { display: inline-flex; align-items: center; gap: 6px; color: inherit; text-decoration: none; }
