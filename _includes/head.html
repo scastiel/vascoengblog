@@ -1,6 +1,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-{%- capture og_title -%}{% if page.title and page.url != "/" %}{{ page.title }} · {{ site.title }}{% else %}{{ site.title }}{% endif %}{%- endcapture -%}
+{%- capture og_title -%}{% if page.title and page.url != "/" %}{{ page.title }} · {{ site.title }}{% else %}{{ site.title }} · {{ site.tagline | replace: '.', '' }}{% endif %}{%- endcapture -%}
 {%- capture og_description -%}{{ page.dek | default: page.summary | default: site.description | strip_html | strip_newlines | escape }}{%- endcapture -%}
 <title>{{ og_title }}</title>
 {% if page.dek or page.summary or site.description %}
