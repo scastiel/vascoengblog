@@ -522,6 +522,82 @@ a:hover   { color: var(--accent-2); }
   margin: 46px 0 4px;
 }
 
+/* --- Glossary ------------------------------------------------------------ */
+/* The glossary stays in the DOM as the source for the inline tooltips, but is
+   not rendered as a section — definitions surface on the terms themselves. */
+.vx-glossary { display: none; }
+
+/* --- Glossary tooltips --------------------------------------------------- */
+/* Terms with a Glossary entry get a dotted underline; the definition floats
+   on hover/focus. Built client-side in blog.js from the post's own glossary. */
+.vx-prose .vx-term {
+  position: relative;
+  border-bottom: 1px dotted var(--accent);
+  cursor: help;
+}
+.vx-prose .vx-term:focus { outline: none; }
+/* position: fixed keeps the tip out of the page's scrollable overflow (so it
+   can never introduce horizontal scroll); blog.js sets top/left on open and
+   clamps it inside the viewport. */
+.vx-term .vx-tip {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: max-content;
+  max-width: min(320px, calc(100vw - 24px));
+  padding: 11px 13px;
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 13.5px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: -0.005em;
+  text-align: left;
+  color: var(--text-soft);
+  white-space: normal;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(4px);
+  transition: opacity .14s ease, transform .14s ease;
+  pointer-events: none;
+  z-index: 60;
+}
+/* Arrow: --arrow-x (set by JS) keeps it pointing at the term even when the
+   tip has been shifted sideways to stay on screen. */
+.vx-term .vx-tip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: var(--arrow-x, 50%);
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: var(--surface);
+}
+.vx-term .vx-tip.below::after {
+  top: auto;
+  bottom: 100%;
+  border-top-color: transparent;
+  border-bottom-color: var(--surface);
+}
+.vx-term .vx-tip.is-open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.vx-tip-term {
+  display: block;
+  margin-bottom: 5px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: var(--accent);
+}
+
 /* --- Signature: inline CTA box ------------------------------------------- */
 .vx-cta {
   margin: 44px 0 8px;
